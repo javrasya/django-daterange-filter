@@ -5,9 +5,9 @@ setup(
     version='0.1.2',
     description='Allow to filter by a custom date range on the Django Admin',
     long_description=open('README').read(-1),
-    author='Ahmet DAL',
-    author_email='ceahmetdal@gmail.com',
-    url='https://github.com/javrasya/django-daterange-filter.git',
+    author='Tomas Zulberti',
+    author_email='tzulberti@gmail.com',
+    url='http://github.com/tzulberti/django-datefilterspec',
     keywords=[
         'django admin',
         'django date range',
