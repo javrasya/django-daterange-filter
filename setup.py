@@ -7,7 +7,7 @@ setup(
     long_description=open('README').read(-1),
     author='Tomas Zulberti',
     author_email='tzulberti@gmail.com',
-    url='http://github.com/tzulberti/django-datefilterspec',
+    url='https://github.com/javrasya/django-daterange-filter.git',
     keywords=[
         'django admin',
         'django date range',
