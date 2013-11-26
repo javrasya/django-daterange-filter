@@ -1,2 +1,3 @@
 include README
 recursive-include daterange_filter/templates *
+recursive-include daterange_filter/static *
