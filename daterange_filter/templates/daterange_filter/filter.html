@@ -1,19 +1,26 @@
 {% load i18n %}
 <h3>{% blocktrans with filter_title=title %} By {{ filter_title }} {% endblocktrans %}</h3>
 {{ spec.form.media }}
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script type="text/javascript" src="/static/js/jquery.ba-bbq.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui-i18n.js"></script>
+<script type="text/javascript" src="/static/js/date_range_filter.js"></script>
+
+<script type="text/javascript">
+    {% get_current_language as LANGUAGE_CODE %}
+    var lang = '{{ LANGUAGE_CODE }}'
+</script>
 <style>
-	.calendarbox {
-		margin-left: -200px;
-		z-index: 1000;
-	}
-	.daterange_form input {
-		width: 100%;
-	}
+    .calendarbox {
+        margin-left: -200px;
+        z-index: 1000;
+    }
+
+    .daterange_form input {
+        width: 100%;
+    }
 </style>
-<form class='daterange_form' method="GET" action="">
-	{{ spec.form.as_p }}
-	<p>
-	<input type="submit" value="{% trans "Search" %}">
-	<input type="reset" value="{% trans "Clear" %}">
-	</p>
-</form>
+{{ spec.form.as_p }}
+<p>
+</p>
