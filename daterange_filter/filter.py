@@ -13,7 +13,6 @@ from django.utils.translation import ugettext as _
 
 
 class DateRangeForm(forms.Form):
-
     def __init__(self, *args, **kwargs):
         field_name = kwargs.pop('field_name')
         super(DateRangeForm, self).__init__(*args, **kwargs)
@@ -31,6 +30,11 @@ class DateRangeForm(forms.Form):
 
 class DateRangeFilter(admin.filters.FieldListFilter):
     template = 'daterange_filter/filter.html'
+
+
+    class Media:
+        js = ("/static/js/jquery.js", "/static/js/date_range_filter.js", "/static/js/jquery-ui.js")
+
 
     def __init__(self, field, request, params, model, model_admin, field_path):
         self.lookup_kwarg_since = '%s__gte' % field_path
