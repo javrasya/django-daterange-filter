@@ -1,40 +1,91 @@
-from setuptools import setup, find_packages
+#!/usr/bin/env python
+try:
+        from setuptools import setup, find_packages
+except ImportError:
+        from ez_setup import use_setuptools
+        use_setuptools()
+        from setuptools import setup, find_packages
 
-setup(
-    name='django-daterange-filter',
-    version='0.1.2',
-    description='Allow to filter by a custom date range on the Django Admin',
-    long_description=open('README').read(-1),
-    author='Tomas Zulberti',
-    author_email='tzulberti@gmail.com',
-    url='https://github.com/javrasya/django-daterange-filter.git',
-    keywords=[
-        'django admin',
-        'django date range',
-    ],
-    install_requires=[
-        "Django",
-        "South",
-    ],
-    packages=find_packages(),
-    include_package_data=True,
-    zip_safe=False,
-    classifiers = [
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Framework :: Django',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.4',
-        'Programming Language :: Python :: 2.5',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Internet :: WWW/HTTP :: WSGI',
-        'Topic :: Software Development :: Libraries :: Application Frameworks',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Environment :: Web Environment',
-        'Operating System :: OS Independent'
-    ],
-    license = 'License :: OSI Approved :: BSD License',
-)
+from distutils.command.build_py import build_py as _build_py
+from setuptools.command.sdist import sdist as _sdist
+import os
+import sys
+from os import path
+
+v = open(path.join(path.dirname(__file__), 'VERSION'))
+VERSION = v.readline().strip()
+v.close()
+
+
+class build_py(_build_py):
+        def run(self):
+                init = path.join(self.build_lib, 'git', '__init__.py')
+                if path.exists(init):
+                        os.unlink(init)
+                _build_py.run(self)
+                _stamp_version(init)
+                self.byte_compile([init])
+
+
+class sdist(_sdist):
+        def make_release_tree (self, base_dir, files):
+                _sdist.make_release_tree(self, base_dir, files)
+                orig = path.join('git', '__init__.py')
+                assert path.exists(orig), orig
+                dest = path.join(base_dir, orig)
+                if hasattr(os, 'link') and path.exists(dest):
+                        os.unlink(dest)
+                self.copy_file(orig, dest)
+                _stamp_version(dest)
+
+
+def _stamp_version(filename):
+        found, out = False, list()
+        try:
+                f = open(filename, 'r')
+        except (IOError, OSError):
+                print >> sys.stderr, "Couldn't find file %s to stamp version" % filename
+                return
+        #END handle error, usually happens during binary builds
+        for line in f:
+                if '__version__ =' in line:
+                        line = line.replace("'git'", "'%s'" % VERSION)
+                        found = True
+                out.append(line)
+        f.close()
+
+        if found:
+                f = open(filename, 'w')
+                f.writelines(out)
+                f.close()
+        else:
+                print >> sys.stderr, "WARNING: Couldn't find version line in file %s" % filename
+
+setup(name = "django-daterange-filter",
+          cmdclass={'build_py': build_py, 'sdist': sdist},
+          version = VERSION,
+          description = "Python Git Library",
+          author = "Sebastian Thiel, Michael Trier",
+          author_email = "byronimo@gmail.com, mtrier@gmail.com",
+          url = "https://github.com/javrasya/django-daterange-filter.git",
+          packages = find_packages('.'),
+          py_modules = ['git.'+f[:-3] for f in os.listdir('./git') if f.endswith('.py')],
+          package_data = {'git.test' : ['fixtures/*']},
+          package_dir = {'git':'git'},
+          license = "BSD License",
+          requires=('gitdb (>=0.5.1)',),
+          install_requires='gitdb >= 0.5.1',
+          zip_safe=False,
+          long_description = """\
+GitPython is a python library used to interact with Git repositories""",
+          classifiers = [
+                "Development Status :: 4 - Beta",
+                "Intended Audience :: Developers",
+                "License :: OSI Approved :: BSD License",
+                "Operating System :: OS Independent",
+                "Programming Language :: Python",
+                "Programming Language :: Python :: 2.5",
+                "Programming Language :: Python :: 2.6",
+                "Topic :: Software Development :: Libraries :: Python Modules",
+                ]
+          )
